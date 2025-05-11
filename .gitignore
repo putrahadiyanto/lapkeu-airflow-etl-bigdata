@@ -1,0 +1,10 @@
+# Ignore logs content but keep the folder
+logs/*
+!logs/.gitkeep
+
+# Don't ignore plugins and scripts
+!plugins/
+!scripts/
+
+# Don't track .env file (contains sensitive environment variables)
+.env
