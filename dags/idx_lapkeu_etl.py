@@ -46,6 +46,8 @@ def transform_data():
     """
     Transform financial data from MongoDB using PySpark.
     This function implements all the transformations from Transformasi_Lapkeu.ipynb
+    and saves the transformed data to disk in parquet format.
+    The actual loading to MongoDB is handled by the load() function.
     """
     logging.info("Starting transformation process...")
     
@@ -289,23 +291,27 @@ def transform_data():
         .unionByName(insurance_df)
         .unionByName(non_special_df)
     )
+      # Sort by emiten name descending
+    final_df = final_df.orderBy("emiten", ascending=True)
     
-    # Sort by emiten name descending
-    final_df = final_df.orderBy("emiten", ascending=False)
-    
-    # Write the transformed data back to MongoDB
-    logging.info("Writing transformed data to MongoDB...")
-    STOCK_COLLECTION_OUTPUT = "2024_transformed"
+    # Save the final DataFrame name into a file for the load step to read
+    logging.info("Saving final_df to disk for the load step...")
     try:
-        final_df.write.format("mongo") \
-            .option("uri", "mongodb://host.docker.internal:27017") \
-            .option("database", "bigdatatugas") \
-            .option("collection", STOCK_COLLECTION_OUTPUT) \
+        # Cache the DataFrame to avoid recomputation
+        final_df.cache()
+        
+        # Count records for logging only
+        record_count = final_df.count()
+        logging.info(f"Transformation completed successfully with {record_count} records")
+        
+        # Save dataframe to parquet format
+        final_df.write.format("parquet") \
             .mode("overwrite") \
-            .save()
-        logging.info(f"Successfully wrote {final_df.count()} records to MongoDB collection {STOCK_COLLECTION_OUTPUT}")
+            .save("/tmp/transformed_data")
+        
+        logging.info(f"Successfully saved transformed data to disk for the load step")
     except Exception as e:
-        logging.error(f"An error occurred while writing to MongoDB: {str(e)}")
+        logging.error(f"An error occurred during data transformation: {str(e)}")
         raise
 
 def extract():
@@ -318,11 +324,44 @@ def extract():
 
 def load():
     """
-    Load task - does nothing as per requirements.
-    In a complete ETL pipeline, this would load data to the target system.
+    Load task - Reads transformed data from disk and writes it to MongoDB collection.
     """
-    logging.info("Load step - No action needed as per requirements")
-    pass
+    logging.info("Starting load process...")
+    
+    # Initialize Spark session
+    spark = create_spark_session()
+    
+    # Read from the parquet file
+    FINAL_COLLECTION = "2024_transformed"
+    
+    logging.info("Reading transformed data from disk...")
+    try:
+        # Read the saved parquet data
+        df = spark.read.format("parquet").load("/tmp/transformed_data")
+        df = df.orderBy("emiten", ascending=True)
+        
+        # Write to the final MongoDB collection
+        logging.info(f"Writing data to MongoDB collection {FINAL_COLLECTION}...")
+        df.write.format("mongo") \
+            .option("uri", "mongodb://host.docker.internal:27017") \
+            .option("database", "bigdatatugas") \
+            .option("collection", FINAL_COLLECTION) \
+            .mode("overwrite") \
+            .save()
+        logging.info(f"Successfully wrote {df.count()} records to MongoDB collection {FINAL_COLLECTION}")
+        
+        # Clean up the temporary parquet files
+        logging.info("Cleaning up temporary parquet files...")
+        import shutil
+        try:
+            shutil.rmtree("/tmp/transformed_data")
+            logging.info("Successfully removed temporary parquet files")
+        except Exception as e:
+            logging.warning(f"Failed to clean up temporary parquet files: {str(e)}")
+            # Continue execution even if cleanup fails
+    except Exception as e:
+        logging.error(f"An error occurred during the load process: {str(e)}")
+        raise
 
 # Set default arguments for the DAG
 default_args = {
