@@ -463,7 +463,8 @@ dag = DAG(
     'idx_lapkeu_etl',
     default_args=default_args,
     description='IDX Laporan Keuangan ETL process',
-    schedule=None,
+    schedule_interval='0 0 1 2,5,8,11 *',
+    start_date=datetime(2023, 2, 1),
     catchup=False,
     tags=['idx', 'financial', 'etl']
 )
