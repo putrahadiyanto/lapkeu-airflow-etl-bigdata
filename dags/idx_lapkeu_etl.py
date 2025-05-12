@@ -469,19 +469,19 @@ dag = DAG(
 )
 
 extract_task = PythonOperator(
-    task_id='extract',
+    task_id='scrapping_data_idx',
     python_callable=extract, # This now calls the scraper
     dag=dag
 )
 
 transform_task = PythonOperator(
-    task_id='transform',
+    task_id='transform_data_using_pyspark',
     python_callable=transform_data,
     dag=dag
 )
 
 load_task = PythonOperator(
-    task_id='load',
+    task_id='load_data_into_mongodb',
     python_callable=load,
     dag=dag
 )
