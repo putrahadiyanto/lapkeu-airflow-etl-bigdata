@@ -91,6 +91,8 @@ def transform_data():
             F.col("facts.EntityName_CurrentYearInstant.value").alias("entity_name"),
             F.col("ticker").alias("emiten"),
             F.col("facts.CurrentPeriodEndDate_CurrentYearInstant.value").alias("report_date"),
+            F.col("facts.DescriptionOfPresentationCurrency_CurrentYearInstant.value").alias("satuan"),
+            F.col("facts.LevelOfRoundingUsedInFinancialStatements_CurrentYearInstant.value").alias("pembulatan"),
             
             calculate_sum_if_exists(
                 F.col("facts.InterestIncome_CurrentYearDuration.value"),
@@ -130,6 +132,8 @@ def transform_data():
             F.col("facts.EntityName_CurrentYearInstant.value").alias("entity_name"),
             F.col("ticker").alias("emiten"),
             F.col("facts.CurrentPeriodEndDate_CurrentYearInstant.value").alias("report_date"),
+            F.col("facts.DescriptionOfPresentationCurrency_CurrentYearInstant.value").alias("satuan"),
+            F.col("facts.LevelOfRoundingUsedInFinancialStatements_CurrentYearInstant.value").alias("pembulatan"),
             
             calculate_sum_if_exists(
                 F.col("facts.IncomeFromMurabahahAndIstishna_CurrentYearDuration.value"),
@@ -177,6 +181,8 @@ def transform_data():
             F.col("ticker").alias("emiten"),
             F.col("facts.EntityName_CurrentYearInstant.value").alias("entity_name"),
             F.col("facts.CurrentPeriodEndDate_CurrentYearInstant.value").alias("report_date"),
+            F.col("facts.DescriptionOfPresentationCurrency_CurrentYearInstant.value").alias("satuan"),
+            F.col("facts.LevelOfRoundingUsedInFinancialStatements_CurrentYearInstant.value").alias("pembulatan"),
 
             calculate_sum_if_exists(
                 F.col("facts.IncomeFromBrokerageActivity_CurrentYearDuration.value"),
@@ -225,8 +231,10 @@ def transform_data():
             F.col("facts.EntityName_CurrentYearInstant.value").alias("entity_name"),
             F.col("ticker").alias("emiten"),
             F.col("facts.CurrentPeriodEndDate_CurrentYearInstant.value").alias("report_date"),
-            F.col("facts.RevenueFromInsurancePremiums_CurrentYearDuration.value").alias("revenue"),
+            F.col("facts.DescriptionOfPresentationCurrency_CurrentYearInstant.value").alias("satuan"),
+            F.col("facts.LevelOfRoundingUsedInFinancialStatements_CurrentYearInstant.value").alias("pembulatan"),
             
+            F.col("facts.RevenueFromInsurancePremiums_CurrentYearDuration.value").alias("revenue"),
             F.when(
                 F.col("facts.RevenueFromInsurancePremiums_CurrentYearDuration.value").isNotNull() &
                 (F.col("facts.ClaimExpenses_CurrentYearDuration.value").isNotNull() |
@@ -264,6 +272,8 @@ def transform_data():
             F.col("facts.EntityName_CurrentYearInstant.value").alias("entity_name"),
             F.col("ticker").alias("emiten"),
             F.col("facts.CurrentPeriodEndDate_CurrentYearInstant.value").alias("report_date"),
+            F.col("facts.DescriptionOfPresentationCurrency_CurrentYearInstant.value").alias("satuan"),
+            F.col("facts.LevelOfRoundingUsedInFinancialStatements_CurrentYearInstant.value").alias("pembulatan"),
             F.col("facts.SalesAndRevenue_CurrentYearDuration.value").alias("revenue"),
             F.col("facts.GrossProfit_CurrentYearDuration.value").alias("gross_profit"),
             F.col("facts.ProfitLossBeforeIncomeTax_CurrentYearDuration.value").alias("operating_profit"),
