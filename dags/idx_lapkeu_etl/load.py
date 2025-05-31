@@ -8,7 +8,7 @@ from parquet files into MongoDB.
 import logging
 import os
 import shutil
-from .spark_utils import create_spark_session, get_current_quarter
+from dags.idx_lapkeu_etl.spark_utils import create_spark_session, get_current_quarter
 
 
 def load():

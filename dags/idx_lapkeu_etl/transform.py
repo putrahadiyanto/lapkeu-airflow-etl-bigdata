@@ -7,7 +7,7 @@ using PySpark and prepares it for loading into the target MongoDB collection.
 
 import logging
 from pyspark.sql import functions as F
-from .spark_utils import create_spark_session
+from dags.idx_lapkeu_etl.spark_utils import create_spark_session
 
 
 def calculate_sum_if_exists(*columns):

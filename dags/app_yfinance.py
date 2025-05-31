@@ -66,11 +66,11 @@ def process_and_save_task(**kwargs):
             logging.info(f"Mengunduh data terbaru untuk {ticker_symbol}...")
             stock_data = yf.download(
                 ticker_yf,
-                start="2025-05-26",
-                end="2025-05-27",
+                start="2025-05-27",
+                end="2025-05-28",
                 progress=False
             )
-            time.sleep(5)  # Add delay to avoid rate limiting
+            
             if stock_data.empty:
                 logging.warning(f"Tidak ada data untuk {ticker_symbol}")
                 continue
@@ -101,6 +101,7 @@ def process_and_save_task(**kwargs):
                 total_documents += len(documents_for_ticker)
                 
             logging.info(f"Data terbaru {ticker_symbol} berhasil diproses: {len(documents_for_ticker)} dokumen")
+            time.sleep(10)  # Add delay to avoid rate limiting
             
         except Exception as e:
             logging.error(f"Error saat mengunduh {ticker_symbol}: {str(e)}")

@@ -7,7 +7,7 @@ using a Selenium-based scraper and stores it in MongoDB.
 
 import logging
 from dags import app_scraper
-from .spark_utils import get_current_quarter
+from dags.idx_lapkeu_etl.spark_utils import get_current_quarter
 
 
 def extract_financial_data():
